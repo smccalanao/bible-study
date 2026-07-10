@@ -1,5 +1,5 @@
 /* Bible Study service worker — caches app shell + Bible JSON for offline use */
-const CACHE_VERSION = "bible-study-v3";
+const CACHE_VERSION = "bible-study-v4";
 
 // Derive base path from SW location (e.g. /bible-study when on GitHub Pages)
 const BASE = self.location.pathname.replace(/\/sw\.js$/, "") || "";

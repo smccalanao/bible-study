@@ -27,6 +27,12 @@ export const metadata: Metadata = {
     title: "Bible Study",
     statusBarStyle: "default",
   },
+  formatDetection: {
+    telephone: false,
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
   icons: {
     icon: [
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },

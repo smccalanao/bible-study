@@ -12,6 +12,7 @@ import {
 import { getBook } from "@/lib/bible/books";
 import { speakText } from "@/lib/audio/tts";
 import { StreakCard } from "@/components/StreakCard";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 export default function HomePage() {
   const [votdText, setVotdText] = useState<string>("");
@@ -55,6 +56,8 @@ export default function HomePage() {
       </header>
 
       <StreakCard />
+
+      <InstallPrompt />
 
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-3">
