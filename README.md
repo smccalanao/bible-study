@@ -1,6 +1,6 @@
 # Bible Study
 
-Mobile-first Bible reader with highlights, notes, search, plans, and offline support.
+Mobile-first Bible reader with highlights, notes, search, stories, and offline support.
 
 ## Translations
 
@@ -34,7 +34,8 @@ Then open the site once online (so the service worker can cache Bibles), and you
 - Verse reader, parallel mode, Listen (TTS)
 - Search by keyword or reference (`John 3:16`)
 - Highlights, notes, bookmarks (local)
-- Verse of the Day + reading plans
+- Verse of the Day + Bible stories
+- Reading streak / progress
 
 ## NKJV source
 

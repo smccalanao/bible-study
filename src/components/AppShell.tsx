@@ -8,7 +8,7 @@ const TABS = [
   { href: "/bible", label: "Bible", icon: BibleIcon },
   { href: "/search", label: "Search", icon: SearchIcon },
   { href: "/notes", label: "Notes", icon: NotesIcon },
-  { href: "/plans", label: "Plans", icon: PlansIcon },
+  { href: "/stories", label: "Stories", icon: StoriesIcon },
 ] as const;
 
 export function BottomNav() {
@@ -132,20 +132,23 @@ function NotesIcon({ active }: { active: boolean }) {
   );
 }
 
-function PlansIcon({ active }: { active: boolean }) {
+function StoriesIcon({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <rect
-        x="4"
-        y="5"
-        width="16"
-        height="15"
-        rx="2"
+      <path
+        d="M5 4.5h11.5A2.5 2.5 0 0 1 19 7v12.5H7A2 2 0 0 0 5 21.5"
         stroke="currentColor"
         strokeWidth={active ? 2.2 : 1.7}
+        strokeLinecap="round"
       />
       <path
-        d="M8 3.5v3M16 3.5v3M4 10h16"
+        d="M5 4.5A2 2 0 0 1 7 2.5h12V17"
+        stroke="currentColor"
+        strokeWidth={active ? 2.2 : 1.7}
+        strokeLinecap="round"
+      />
+      <path
+        d="M9 8h6M9 11.5h6M9 15h4"
         stroke="currentColor"
         strokeWidth={active ? 2.2 : 1.7}
         strokeLinecap="round"

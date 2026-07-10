@@ -1,11 +1,11 @@
 /* Bible Study service worker — caches app shell + Bible JSON for offline use */
-const CACHE_VERSION = "bible-study-v1";
+const CACHE_VERSION = "bible-study-v2";
 const PRECACHE = [
   "/",
   "/bible",
   "/search",
   "/notes",
-  "/plans",
+  "/stories",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",

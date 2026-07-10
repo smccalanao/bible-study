@@ -19,7 +19,7 @@ const scripture = Literata({
 export const metadata: Metadata = {
   title: "Bible Study",
   description:
-    "Read Scripture offline with highlights, notes, and daily plans.",
+    "Read Scripture offline with highlights, notes, and stories.",
   applicationName: "Bible Study",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
