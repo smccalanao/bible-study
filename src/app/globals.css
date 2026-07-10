@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #142033;
+  --ink-soft: #3d4a5c;
+  --paper: #eef2f6;
+  --paper-elevated: #f7f9fb;
+  --line: #d5dde7;
+  --accent: #1f6f6a;
+  --accent-soft: #d7ebe9;
+  --highlight-yellow: #f6e7a1;
+  --highlight-green: #c8e6c9;
+  --highlight-blue: #bbdefb;
+  --highlight-pink: #f8bbd0;
+  --highlight-orange: #ffe0b2;
+  --nav-height: 4.25rem;
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-paper-elevated: var(--paper-elevated);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --font-sans: var(--font-ui);
+  --font-serif: var(--font-scripture);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 10% -20%, #dce8e6 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 100% 0%, #d9e2ef 0%, transparent 50%),
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--font-ui), system-ui, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding-bottom: calc(var(--nav-height) + 1rem);
+}
+
+.page {
+  flex: 1;
+  padding: 1.25rem 1.1rem 1.5rem;
+}
+
+.scripture {
+  font-family: var(--font-scripture), Georgia, serif;
+  font-size: 1.125rem;
+  line-height: 1.75;
+  color: var(--ink);
+}
+
+.hl-yellow { background: var(--highlight-yellow); }
+.hl-green { background: var(--highlight-green); }
+.hl-blue { background: var(--highlight-blue); }
+.hl-pink { background: var(--highlight-pink); }
+.hl-orange { background: var(--highlight-orange); }
