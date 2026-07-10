@@ -30,7 +30,6 @@ export default function BibleIndexPage() {
   }, []);
 
   const lastBook = last ? getBook(last.bookAbbrev) : null;
-  const selected = TRANSLATIONS.find((t) => t.id === translationId);
 
   const visibleBooks = useMemo(() => {
     if (filter === "all") return BOOKS;
@@ -63,52 +62,23 @@ export default function BibleIndexPage() {
         </p>
       </header>
 
-      <section className="space-y-2">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-soft">
-          Choose translation
-        </h2>
-        <div className="overflow-hidden rounded-2xl border border-line bg-paper-elevated">
-          {TRANSLATIONS.map((t, i) => {
-            const active = translationId === t.id;
-            return (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => onPickTranslation(t.id)}
-                className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-paper ${
-                  i > 0 ? "border-t border-line" : ""
-                } ${active ? "bg-accent-soft/60" : ""}`}
-              >
-                <div>
-                  <p className={`font-medium ${active ? "text-accent" : "text-ink"}`}>
-                    {t.name}
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-soft">
-                    {t.shortName}
-                    {t.publicDomain ? " · Public domain" : " · Licensed copy"}
-                  </p>
-                </div>
-                <span
-                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[0.65rem] font-bold ${
-                    active
-                      ? "border-accent bg-accent text-white"
-                      : "border-line bg-paper text-transparent"
-                  }`}
-                  aria-hidden
-                >
-                  ✓
-                </span>
-              </button>
-            );
-          })}
-        </div>
-        {selected && (
-          <p className="px-0.5 text-xs text-ink-soft">
-            Reading in <span className="font-semibold text-ink">{selected.shortName}</span>
-            {" — "}this applies when you open any book.
-          </p>
-        )}
-      </section>
+      <div className="flex flex-wrap items-center gap-2">
+        <label htmlFor="bible-translation" className="text-sm font-medium text-ink-soft">
+          Translation
+        </label>
+        <select
+          id="bible-translation"
+          value={translationId}
+          onChange={(e) => onPickTranslation(e.target.value as TranslationId)}
+          className="min-w-[12rem] flex-1 rounded-full border border-line bg-paper-elevated px-3 py-2 text-sm font-medium text-ink outline-none focus:border-accent"
+        >
+          {TRANSLATIONS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.shortName} — {t.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div className="flex flex-wrap gap-2">
         <Link

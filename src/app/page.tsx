@@ -115,6 +115,36 @@ export default function HomePage() {
         )}
       </section>
 
+      <section className="space-y-3">
+        <div className="flex items-end justify-between gap-3">
+          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-ink-soft">
+            Bible Stories
+          </h2>
+          <Link href="/stories" className="text-sm font-medium text-accent">
+            See all
+          </Link>
+        </div>
+        <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {[
+            { id: "noah-ark", title: "Noah and the Ark" },
+            { id: "david-goliath", title: "David and Goliath" },
+            { id: "prodigal-son", title: "The Prodigal Son" },
+            { id: "resurrection", title: "The Resurrection" },
+          ].map((s) => (
+            <Link
+              key={s.id}
+              href={`/stories/${s.id}`}
+              className="min-w-[10.5rem] shrink-0 rounded-2xl border border-line bg-paper-elevated px-4 py-4 transition hover:border-accent/30"
+            >
+              <p className="font-serif text-lg font-semibold leading-snug text-ink">
+                {s.title}
+              </p>
+              <p className="mt-2 text-xs font-medium text-accent">Read →</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="grid grid-cols-2 gap-3">
         <Link
           href="/search"
@@ -124,11 +154,11 @@ export default function HomePage() {
           <p className="mt-1 text-xs text-ink-soft">Keywords or John 3:16</p>
         </Link>
         <Link
-          href="/plans"
+          href="/stories"
           className="rounded-2xl border border-line bg-paper-elevated px-4 py-4"
         >
-          <p className="font-semibold text-ink">Plans</p>
-          <p className="mt-1 text-xs text-ink-soft">Reading rhythms</p>
+          <p className="font-semibold text-ink">Stories</p>
+          <p className="mt-1 text-xs text-ink-soft">20 Bible narratives</p>
         </Link>
       </section>
 
