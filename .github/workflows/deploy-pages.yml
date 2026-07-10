@@ -30,6 +30,11 @@ jobs:
       - name: Install
         run: npm install
 
+      - name: Write GitHub Pages manifest
+        run: node scripts/write-manifest.js
+        env:
+          GITHUB_PAGES: "true"
+
       - name: Build static site
         run: npm run build
         env:

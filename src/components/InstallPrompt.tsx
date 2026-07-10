@@ -78,7 +78,7 @@ export function InstallPrompt() {
         <p className="mt-0.5 text-xs text-ink-soft">
           {iosDevice
             ? "Add to your Home Screen for quick access"
-            : "Install on this device — works offline"}
+            : "Install as an app (not just a shortcut) — works offline"}
         </p>
       </button>
 

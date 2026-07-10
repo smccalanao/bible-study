@@ -1,11 +1,10 @@
-/* Bible Study service worker — caches app shell + Bible JSON for offline use */
-const CACHE_VERSION = "bible-study-v4";
-
-// Derive base path from SW location (e.g. /bible-study when on GitHub Pages)
+/* Bible Study service worker — must activate even if some precache URLs fail */
+const CACHE_VERSION = "bible-study-v5";
 const BASE = self.location.pathname.replace(/\/sw\.js$/, "") || "";
 
 const PRECACHE = [
   `${BASE}/`,
+  `${BASE}/index.html`,
   `${BASE}/bible/`,
   `${BASE}/search/`,
   `${BASE}/notes/`,
@@ -18,13 +17,22 @@ const PRECACHE = [
   `${BASE}/data/bibles/bbe.json`,
 ];
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(CACHE_VERSION)
-      .then((cache) => cache.addAll(PRECACHE))
-      .then(() => self.skipWaiting()),
+async function precacheAll() {
+  const cache = await caches.open(CACHE_VERSION);
+  await Promise.all(
+    PRECACHE.map(async (url) => {
+      try {
+        const res = await fetch(url, { cache: "no-cache" });
+        if (res.ok) await cache.put(url, res.clone());
+      } catch {
+        // Ignore individual failures so the SW still installs
+      }
+    }),
   );
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(precacheAll().then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", (event) => {
@@ -44,6 +52,7 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  if (BASE && !url.pathname.startsWith(BASE)) return;
 
   const path = url.pathname;
 
@@ -61,6 +70,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
+  // Always handle navigations so Chrome treats this as a real app, not a shortcut
   if (request.mode === "navigate" || request.headers.get("accept")?.includes("text/html")) {
     event.respondWith(networkFirst(request));
   }
@@ -70,8 +80,10 @@ async function cacheFirst(request) {
   const cached = await caches.match(request);
   if (cached) return cached;
   const fresh = await fetch(request);
-  const cache = await caches.open(CACHE_VERSION);
-  cache.put(request, fresh.clone());
+  if (fresh.ok) {
+    const cache = await caches.open(CACHE_VERSION);
+    cache.put(request, fresh.clone());
+  }
   return fresh;
 }
 
@@ -80,7 +92,7 @@ async function staleWhileRevalidate(request) {
   const cached = await cache.match(request);
   const network = fetch(request)
     .then((response) => {
-      cache.put(request, response.clone());
+      if (response.ok) cache.put(request, response.clone());
       return response;
     })
     .catch(() => cached);
@@ -91,11 +103,13 @@ async function networkFirst(request) {
   const cache = await caches.open(CACHE_VERSION);
   try {
     const fresh = await fetch(request);
-    cache.put(request, fresh.clone());
+    if (fresh.ok) cache.put(request, fresh.clone());
     return fresh;
   } catch {
-    const cached = await cache.match(request);
-    if (cached) return cached;
-    return caches.match(`${BASE}/`) || Response.error();
+    const cached =
+      (await caches.match(request)) ||
+      (await caches.match(`${BASE}/`)) ||
+      (await caches.match(`${BASE}/index.html`));
+    return cached || Response.error();
   }
 }

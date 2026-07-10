@@ -10,8 +10,12 @@ export function ServiceWorkerRegister() {
     const register = async () => {
       try {
         const swUrl = withBase("/sw.js");
-        const scope = `${BASE_PATH}/` || "/";
-        await navigator.serviceWorker.register(swUrl, { scope });
+        const scope = BASE_PATH ? `${BASE_PATH}/` : "/";
+        const reg = await navigator.serviceWorker.register(swUrl, {
+          scope,
+          updateViaCache: "none",
+        });
+        await reg.update();
       } catch {
         // Ignore registration errors in unsupported environments
       }
