@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { BASE_PATH, withBase } from "@/lib/basePath";
 
 export function ServiceWorkerRegister() {
   useEffect(() => {
@@ -8,7 +9,9 @@ export function ServiceWorkerRegister() {
 
     const register = async () => {
       try {
-        await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+        const swUrl = withBase("/sw.js");
+        const scope = `${BASE_PATH}/` || "/";
+        await navigator.serviceWorker.register(swUrl, { scope });
       } catch {
         // Ignore registration errors in unsupported environments
       }

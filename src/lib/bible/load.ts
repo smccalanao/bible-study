@@ -1,5 +1,6 @@
 import { BOOKS, cleanVerseText, getBook, getTranslation, TRANSLATIONS } from "./books";
 import type { BibleBookJson, SearchHit, TranslationId } from "./types";
+import { withBase } from "../basePath";
 
 const cache = new Map<TranslationId, BibleBookJson[]>();
 
@@ -10,7 +11,7 @@ export async function loadTranslation(
   if (hit) return hit;
 
   const meta = getTranslation(id);
-  const res = await fetch(meta.file);
+  const res = await fetch(withBase(meta.file));
   if (!res.ok) throw new Error(`Failed to load ${meta.name}`);
   const data = (await res.json()) as BibleBookJson[];
   cache.set(id, data);

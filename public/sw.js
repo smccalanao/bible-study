@@ -1,30 +1,40 @@
 /* Bible Study service worker — caches app shell + Bible JSON for offline use */
-const CACHE_VERSION = "bible-study-v2";
+const CACHE_VERSION = "bible-study-v3";
+
+// Derive base path from SW location (e.g. /bible-study when on GitHub Pages)
+const BASE = self.location.pathname.replace(/\/sw\.js$/, "") || "";
+
 const PRECACHE = [
-  "/",
-  "/bible",
-  "/search",
-  "/notes",
-  "/stories",
-  "/manifest.webmanifest",
-  "/icons/icon-192.png",
-  "/icons/icon-512.png",
-  "/data/bibles/kjv.json",
-  "/data/bibles/nkjv.json",
-  "/data/bibles/bbe.json",
+  `${BASE}/`,
+  `${BASE}/bible/`,
+  `${BASE}/search/`,
+  `${BASE}/notes/`,
+  `${BASE}/stories/`,
+  `${BASE}/manifest.webmanifest`,
+  `${BASE}/icons/icon-192.png`,
+  `${BASE}/icons/icon-512.png`,
+  `${BASE}/data/bibles/kjv.json`,
+  `${BASE}/data/bibles/nkjv.json`,
+  `${BASE}/data/bibles/bbe.json`,
 ];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()),
+    caches
+      .open(CACHE_VERSION)
+      .then((cache) => cache.addAll(PRECACHE))
+      .then(() => self.skipWaiting()),
   );
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))),
-    ).then(() => self.clients.claim()),
+    caches
+      .keys()
+      .then((keys) =>
+        Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k))),
+      )
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -35,23 +45,22 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Bible data: cache-first
-  if (url.pathname.startsWith("/data/bibles/")) {
+  const path = url.pathname;
+
+  if (path.includes("/data/bibles/")) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
-  // Static assets / next chunks: stale-while-revalidate
   if (
-    url.pathname.startsWith("/_next/") ||
-    url.pathname.startsWith("/icons/") ||
-    url.pathname.endsWith(".webmanifest")
+    path.includes("/_next/") ||
+    path.includes("/icons/") ||
+    path.endsWith(".webmanifest")
   ) {
     event.respondWith(staleWhileRevalidate(request));
     return;
   }
 
-  // Navigations / pages: network-first with cache fallback
   if (request.mode === "navigate" || request.headers.get("accept")?.includes("text/html")) {
     event.respondWith(networkFirst(request));
   }
@@ -87,6 +96,6 @@ async function networkFirst(request) {
   } catch {
     const cached = await cache.match(request);
     if (cached) return cached;
-    return caches.match("/") || Response.error();
+    return caches.match(`${BASE}/`) || Response.error();
   }
 }
