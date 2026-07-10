@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getVerseText } from "@/lib/bible/load";
+import { getVerseText, prefetchAllTranslations } from "@/lib/bible/load";
 import { getVerseOfTheDay } from "@/lib/plans/daily";
 import {
   getLastReading,
@@ -11,7 +11,7 @@ import {
 } from "@/lib/storage/annotations";
 import { getBook } from "@/lib/bible/books";
 import { speakText } from "@/lib/audio/tts";
-import { prefetchAllTranslations } from "@/lib/bible/load";
+import { StreakCard } from "@/components/StreakCard";
 
 export default function HomePage() {
   const [votdText, setVotdText] = useState<string>("");
@@ -49,10 +49,12 @@ export default function HomePage() {
           Bible Study
         </h1>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-soft">
-          A quiet place to read, mark, and return — starting with public-domain
-          KJV and BBE.
+          A quiet place to read, mark, and return — KJV, NKJV, and BBE, with
+          offline support after the first visit.
         </p>
       </header>
+
+      <StreakCard />
 
       <section className="space-y-3">
         <div className="flex items-end justify-between gap-3">

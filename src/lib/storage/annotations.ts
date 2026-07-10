@@ -183,7 +183,7 @@ export function setLastReading(reading: LastReading) {
 }
 
 export function getPreferredTranslation(): TranslationId {
-  return readJson<TranslationId>(KEYS.preferredTranslation, "kjv");
+  return readJson<TranslationId>(KEYS.preferredTranslation, "nkjv");
 }
 
 export function setPreferredTranslation(id: TranslationId) {

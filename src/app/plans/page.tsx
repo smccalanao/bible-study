@@ -1,9 +1,30 @@
 "use client";
 
 import Link from "next/link";
-import { READING_PLANS } from "@/lib/plans/daily";
+import { useEffect, useState } from "react";
+import { READING_PLANS, type ReadingPlan } from "@/lib/plans/daily";
+import {
+  getPlanDaysDone,
+  recordChapterRead,
+  togglePlanDay,
+} from "@/lib/storage/progress";
 
 export default function PlansPage() {
+  const [doneMap, setDoneMap] = useState<Record<string, number[]>>({});
+
+  useEffect(() => {
+    const next: Record<string, number[]> = {};
+    for (const plan of READING_PLANS) {
+      next[plan.id] = getPlanDaysDone(plan.id);
+    }
+    setDoneMap(next);
+  }, []);
+
+  const onToggle = (planId: string, day: number) => {
+    const updated = togglePlanDay(planId, day);
+    setDoneMap((prev) => ({ ...prev, [planId]: updated }));
+  };
+
   return (
     <div className="page space-y-5">
       <header>
@@ -14,64 +35,98 @@ export default function PlansPage() {
           Plans
         </h1>
         <p className="mt-2 text-sm text-ink-soft">
-          Simple reading plans to build a steady habit. Progress sync comes
-          later.
+          Mark days as you go. Opening a chapter also counts toward your streak.
         </p>
       </header>
 
       <ul className="space-y-3">
         {READING_PLANS.map((plan) => (
-          <li
+          <PlanCard
             key={plan.id}
-            className="rounded-2xl border border-line bg-paper-elevated px-4 py-4"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="font-serif text-xl font-semibold text-ink">
-                  {plan.title}
-                </h2>
-                <p className="mt-1 text-sm text-ink-soft">{plan.description}</p>
-                <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-accent">
-                  {plan.days} days
-                </p>
-              </div>
-            </div>
-            <ol className="mt-4 space-y-1.5">
-              {plan.readings.slice(0, 5).map((r) => (
-                <li key={r.day}>
-                  <Link
-                    href={`/bible/${r.bookAbbrev}/${r.chapter}`}
-                    className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm hover:bg-paper"
-                  >
-                    <span className="text-ink-soft">Day {r.day}</span>
-                    <span className="font-medium text-ink">{r.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ol>
-            {plan.readings.length > 5 && (
-              <details className="mt-2">
-                <summary className="cursor-pointer px-2 text-sm font-medium text-accent">
-                  Show all days
-                </summary>
-                <ol className="mt-1 space-y-1.5">
-                  {plan.readings.slice(5).map((r) => (
-                    <li key={r.day}>
-                      <Link
-                        href={`/bible/${r.bookAbbrev}/${r.chapter}`}
-                        className="flex items-center justify-between rounded-lg px-2 py-1.5 text-sm hover:bg-paper"
-                      >
-                        <span className="text-ink-soft">Day {r.day}</span>
-                        <span className="font-medium text-ink">{r.label}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ol>
-              </details>
-            )}
-          </li>
+            plan={plan}
+            done={doneMap[plan.id] ?? []}
+            onToggle={onToggle}
+          />
         ))}
       </ul>
     </div>
+  );
+}
+
+function PlanCard({
+  plan,
+  done,
+  onToggle,
+}: {
+  plan: ReadingPlan;
+  done: number[];
+  onToggle: (planId: string, day: number) => void;
+}) {
+  const completed = done.length;
+  const percent = plan.days ? Math.round((completed / plan.days) * 100) : 0;
+  const doneSet = new Set(done);
+
+  return (
+    <li className="rounded-2xl border border-line bg-paper-elevated px-4 py-4">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <h2 className="font-serif text-xl font-semibold text-ink">
+            {plan.title}
+          </h2>
+          <p className="mt-1 text-sm text-ink-soft">{plan.description}</p>
+        </div>
+        <p className="shrink-0 text-right text-xs font-semibold uppercase tracking-wide text-accent">
+          {completed}/{plan.days}
+        </p>
+      </div>
+
+      <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-line">
+        <div
+          className="h-full rounded-full bg-accent transition-all"
+          style={{ width: `${percent}%` }}
+        />
+      </div>
+
+      <ol className="mt-4 space-y-1">
+        {plan.readings.map((r) => {
+          const isDone = doneSet.has(r.day);
+          return (
+            <li
+              key={r.day}
+              className="flex items-center gap-2 rounded-lg px-1 py-1 hover:bg-paper"
+            >
+              <button
+                type="button"
+                aria-label={isDone ? "Mark incomplete" : "Mark complete"}
+                onClick={() => {
+                  onToggle(plan.id, r.day);
+                  if (!isDone) {
+                    recordChapterRead(r.bookAbbrev, r.chapter);
+                  }
+                }}
+                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border text-[0.65rem] font-bold ${
+                  isDone
+                    ? "border-accent bg-accent text-white"
+                    : "border-line bg-paper text-transparent"
+                }`}
+              >
+                ✓
+              </button>
+              <Link
+                href={`/bible/${r.bookAbbrev}/${r.chapter}`}
+                className="flex min-w-0 flex-1 items-center justify-between gap-2 text-sm"
+              >
+                <span className="text-ink-soft">Day {r.day}</span>
+                <span
+                  className={`font-medium ${isDone ? "text-ink-soft line-through" : "text-ink"}`}
+                >
+                  {r.label}
+                </span>
+              </Link>
+            </li>
+          );
+        })}
+      </ol>
+    </li>
   );
 }

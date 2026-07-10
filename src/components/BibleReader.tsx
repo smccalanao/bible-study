@@ -21,6 +21,7 @@ import {
   upsertHighlight,
   upsertNote,
 } from "@/lib/storage/annotations";
+import { recordChapterRead } from "@/lib/storage/progress";
 
 const COLORS: HighlightColor[] = [
   "yellow",
@@ -53,7 +54,11 @@ export function BibleReader({ bookAbbrev, chapter }: Props) {
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const otherTranslation: TranslationId =
-    translationId === "kjv" ? "bbe" : "kjv";
+    translationId === "nkjv"
+      ? "kjv"
+      : translationId === "kjv"
+        ? "nkjv"
+        : "kjv";
 
   const refreshAnnotations = (tid: TranslationId) => {
     const highlights = getHighlights().filter(
@@ -118,6 +123,7 @@ export function BibleReader({ bookAbbrev, chapter }: Props) {
           chapter,
           translationId,
         });
+        recordChapterRead(book.abbrev, chapter);
         refreshAnnotations(translationId);
       } catch (e) {
         if (!cancelled) {
@@ -277,6 +283,12 @@ export function BibleReader({ bookAbbrev, chapter }: Props) {
             Listen
           </button>
         </div>
+        {translationId === "nkjv" && (
+          <p className="text-[0.7rem] leading-relaxed text-ink-soft">
+            NKJV® text © Thomas Nelson. For personal use with your licensed
+            copy.
+          </p>
+        )}
       </header>
 
       {loading && (

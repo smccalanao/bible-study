@@ -1,4 +1,4 @@
-export type TranslationId = "kjv" | "bbe";
+export type TranslationId = "kjv" | "bbe" | "nkjv";
 
 export type BibleBookJson = {
   abbrev: string;

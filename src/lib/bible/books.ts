@@ -9,6 +9,13 @@ export const TRANSLATIONS: TranslationMeta[] = [
     publicDomain: true,
   },
   {
+    id: "nkjv",
+    name: "New King James Version",
+    shortName: "NKJV",
+    file: "/data/bibles/nkjv.json",
+    publicDomain: false,
+  },
+  {
     id: "bbe",
     name: "Bible in Basic English",
     shortName: "BBE",

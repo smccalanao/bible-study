@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BOOKS, getBook } from "@/lib/bible/books";
+import { BOOKS, TRANSLATIONS, getBook } from "@/lib/bible/books";
+import type { TranslationId } from "@/lib/bible/types";
 import {
   getLastReading,
+  getPreferredTranslation,
+  setPreferredTranslation,
   type LastReading,
 } from "@/lib/storage/annotations";
 
@@ -19,12 +22,15 @@ const FILTERS: { id: TestamentFilter; label: string }[] = [
 export default function BibleIndexPage() {
   const [last, setLast] = useState<LastReading | null>(null);
   const [filter, setFilter] = useState<TestamentFilter>("all");
+  const [translationId, setTranslationId] = useState<TranslationId>("nkjv");
 
   useEffect(() => {
     setLast(getLastReading());
+    setTranslationId(getPreferredTranslation());
   }, []);
 
   const lastBook = last ? getBook(last.bookAbbrev) : null;
+  const selected = TRANSLATIONS.find((t) => t.id === translationId);
 
   const visibleBooks = useMemo(() => {
     if (filter === "all") return BOOKS;
@@ -37,6 +43,11 @@ export default function BibleIndexPage() {
       : filter === "NT"
         ? "New Testament"
         : "All books";
+
+  const onPickTranslation = (id: TranslationId) => {
+    setTranslationId(id);
+    setPreferredTranslation(id);
+  };
 
   return (
     <div className="page space-y-6">
@@ -51,6 +62,53 @@ export default function BibleIndexPage() {
           All 66 books — Genesis through Revelation.
         </p>
       </header>
+
+      <section className="space-y-2">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.12em] text-ink-soft">
+          Choose translation
+        </h2>
+        <div className="overflow-hidden rounded-2xl border border-line bg-paper-elevated">
+          {TRANSLATIONS.map((t, i) => {
+            const active = translationId === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => onPickTranslation(t.id)}
+                className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition hover:bg-paper ${
+                  i > 0 ? "border-t border-line" : ""
+                } ${active ? "bg-accent-soft/60" : ""}`}
+              >
+                <div>
+                  <p className={`font-medium ${active ? "text-accent" : "text-ink"}`}>
+                    {t.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-ink-soft">
+                    {t.shortName}
+                    {t.publicDomain ? " · Public domain" : " · Licensed copy"}
+                  </p>
+                </div>
+                <span
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[0.65rem] font-bold ${
+                    active
+                      ? "border-accent bg-accent text-white"
+                      : "border-line bg-paper text-transparent"
+                  }`}
+                  aria-hidden
+                >
+                  ✓
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        {selected && (
+          <p className="px-0.5 text-xs text-ink-soft">
+            Reading in <span className="font-semibold text-ink">{selected.shortName}</span>
+            {" — "}this applies when you open any book.
+          </p>
+        )}
+      </section>
 
       <div className="flex flex-wrap gap-2">
         <Link

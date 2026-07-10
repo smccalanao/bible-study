@@ -1,15 +1,16 @@
 # Bible Study
 
-Mobile-first PWA for reading Scripture with highlights, notes, search, and daily plans.
+Mobile-first Bible reader with highlights, notes, search, plans, and offline support.
 
-## MVP stack
+## Translations
 
-- **Next.js** (App Router) + TypeScript + Tailwind
-- **Public-domain Bibles**: KJV + BBE (bundled JSON for offline use)
-- **Local storage** for highlights, notes, and bookmarks
-- **Web Speech API** for listen / TTS
+| ID | Name | Notes |
+| --- | --- | --- |
+| `nkjv` | New King James Version | From your EasyWorship license (personal use) |
+| `kjv` | King James Version | Public domain |
+| `bbe` | Bible in Basic English | Public domain |
 
-## Run locally
+## Run
 
 ```bash
 npm install
@@ -18,16 +19,24 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Tabs
+For full offline / installable PWA:
 
-| Tab | Purpose |
-| --- | --- |
-| Home | Verse of the Day, continue reading, offline cache status |
-| Bible | Chapter reader, parallel translations, highlights / notes / audio |
-| Search | Keyword search + reference jump (`John 3:16`) |
-| Notes | Notes, highlights, saved chapters |
-| Plans | Simple reading plans |
+```bash
+npm run build
+npm start
+```
 
-## Later
+Then open the site once online (so the service worker can cache Bibles), and you can use it offline afterward. On phone Chrome/Edge: **Add to Home Screen**.
 
-NIV/ESV (licensed APIs), auth sync (Supabase/Firebase), native mobile, commentaries, AI study tools.
+## Features
+
+- Bible TOC with Old / New Testament filter (Genesis → Revelation)
+- Verse reader, parallel mode, Listen (TTS)
+- Search by keyword or reference (`John 3:16`)
+- Highlights, notes, bookmarks (local)
+- Verse of the Day + reading plans
+
+## NKJV source
+
+Converted from your EasyWorship `paid-nkjv.ewb` via `scripts/convert-nkjv.js`.
+NKJV text © Thomas Nelson — keep the repo private and use only with your license.
